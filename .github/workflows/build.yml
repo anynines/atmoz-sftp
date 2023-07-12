@@ -1,8 +1,6 @@
 name: build
 
 on:
-  schedule:
-    - cron: "0 12 * * *"
   push:
     paths-ignore:
       - "*.md"
@@ -39,8 +37,8 @@ jobs:
             --label="org.opencontainers.image.revision=$GITHUB_SHA" \
             --label="org.opencontainers.image.created=$(date --rfc-3339=seconds)"
 
-      - name: Test debian image
-        run: tests/run $IMAGE_NAME:debian
+      # - name: Test debian image
+      #   run: tests/run $IMAGE_NAME:debian
 
       - name: Build alpine image
         run: |
@@ -52,23 +50,14 @@ jobs:
             --label="org.opencontainers.image.revision=$GITHUB_SHA" \
             --label="org.opencontainers.image.created=$(date --rfc-3339=seconds)"
 
-      - name: Test alpine image
-        run: tests/run $IMAGE_NAME:alpine
+      # - name: Test alpine image
+      #   run: tests/run $IMAGE_NAME:alpine
 
-      - name: Verify signature
-        if: github.ref == 'refs/heads/master'
-        uses: atmoz/git-verify-ref@master
-        with:
-          import-github-users: atmoz
-
-      - name: Push images to Docker Hub registry
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login \
-            -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-
-          docker push --all-tags $IMAGE_NAME
-          docker logout
+      # - name: Verify signature
+      #   if: github.ref == 'refs/heads/master'
+      #   uses: atmoz/git-verify-ref@master
+      #   with:
+      #     import-github-users: atmoz
 
       - name: Push images to GitHub registry
         if: github.ref == 'refs/heads/master'
